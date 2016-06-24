@@ -10,7 +10,7 @@ import sys
 class SFDCObject:
 
     	#API version
-    version = "31.0"
+    version = sys.argv[3]
 	
 	#FIXME include missing mappings between Salesforce folders and Metadata Types
     SFDCObjectMap = dict({
@@ -67,8 +67,11 @@ class SFDCObject:
 ##*******************************************************************##
 
 
-      
+print (sys.argv[2])
+
 curPath =  os.getcwd()
+
+outputPath = ''.join(e for e in sys.argv[2] if e.isalnum())
 
 lines = sorted(sys.argv[1].split('\n'))
 
@@ -78,13 +81,25 @@ lines = sorted(sys.argv[1].split('\n'))
 #lines = file.readlines()
 #####
 
+##### Shell File Processed #####
+## 1) getPullRequest.sh
+## 2) getGitLog.sh
+
+print("Salesforce API version: " + SFDCObject.version)
+
+print("Folder to be created: " + "Output/" + outputPath)
+
+    
+deleteAction = "deletemode100644"
 
 
+addAction = "add"
 
 for modFile in lines:
     
-    action = "add"
-    if "delete" in modFile:
+    action = addAction
+    
+    if modFile.replace(" ", "").startswith(deleteAction):
         action = "delete"
 
     modFileIndex = modFile.index('src/') + len('src/')
@@ -141,7 +156,7 @@ for listSFDCObjects in pairSFDCObjects:
     tree = ET.ElementTree(package)
 
     if listSFDCObjects:
-        if not os.path.exists("Output/" + sys.argv[2]):
-            os.makedirs("Output/" + sys.argv[2])
-        tree.write("Output/" + sys.argv[2] + "/"+ xmlFileNames.get(obj.sfdcAction),xml_declaration=True,encoding="UTF-8",method="xml")
-        print("file created: " + "Output/" + sys.argv[2] + "/"+ xmlFileNames.get(obj.sfdcAction))
+        if not os.path.exists("Output/" + outputPath):
+            os.makedirs("Output/" + outputPath)
+        tree.write("Output/" + outputPath + "/"+ xmlFileNames.get(obj.sfdcAction),xml_declaration=True,encoding="UTF-8",method="xml")
+        print("file created: " + "Output/" + outputPath + "/"+ xmlFileNames.get(obj.sfdcAction))
