@@ -15,9 +15,9 @@
 echo -n "Enter Pull Request Index Number: "
 read num
 
-curl -u $VAR_USER:$VAR_PASS $VAR_PATH/$num/patch -L -o Input/pullRequest_$num.txt
+curl -u $VAR_USER:$VAR_PASS $VAR_URL/$num/patch -L -o Input/pullRequest_$num.txt
 
-results=$(grep '^+++\|delete mode' Input/pullRequest_$num.txt | grep 'src/' | grep -v '.xml')
+results=$(grep '^+++\|delete mode' Input/pullRequest_$num.txt | grep 'src/' | grep -v '.xml' | uniq)
 
-py xmlConstructor.py "$results" "pullRequest_$num"
+py xmlConstructor.py "$results" "pullRequest_$num" "$VAR_VERSION"
 
