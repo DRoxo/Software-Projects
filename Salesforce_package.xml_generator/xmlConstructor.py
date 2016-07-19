@@ -87,6 +87,10 @@ lines = sorted(sys.argv[1].split('\n'))
 ## 1) getPullRequest.sh
 ## 2) getGitLog.sh
 
+processType = "getGitLog"
+if "pullRequest" in sys.argv[2]:
+    processType = "getPullRequest"
+
 print("Salesforce API version: " + SFDCObject.version)
 
 print("Folder to be created: " + "Output/" + outputPath)
@@ -162,3 +166,10 @@ for listSFDCObjects in pairSFDCObjects:
             os.makedirs("Output/" + outputPath)
         tree.write("Output/" + outputPath + "/"+ xmlFileNames.get(obj.sfdcAction),xml_declaration=True,encoding="UTF-8",method="xml")
         print("file created: " + "Output/" + outputPath + "/"+ xmlFileNames.get(obj.sfdcAction))
+
+
+if processType == "getPullRequest":
+    if not os.path.exists("Input/LOG/" + outputPath):
+        os.makedirs("Input/LOG/" + outputPath)
+
+    os.rename("Input/" + sys.argv[2],"Input/LOG/" + outputPath + sys.argv[2])
