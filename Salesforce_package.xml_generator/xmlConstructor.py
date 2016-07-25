@@ -1,6 +1,6 @@
 import os
 import xml.etree.cElementTree as ET
-
+from datetime import datetime
 import sys
 
 ##********************SFDCObject Constructor*************************##
@@ -10,7 +10,7 @@ import sys
 class SFDCObject:
 
     	#API version
-    version = sys.argv[3]
+    version = sys.argv[2]
 	
 	#FIXME include missing mappings between Salesforce folders and Metadata Types
     SFDCObjectMap = dict({
@@ -29,12 +29,11 @@ class SFDCObject:
     'tabs'			:	'CustomTab'		,
     'permissionsets'		:	'PermissionSet'		,
     'flows'			:	'Flow'			,
-    'customlabels'		:	'CustomLabel'		,
     'workflows'			:	'Workflow'		,
     'applications'		:	'CustomApplication'	,
     'translations'		:	'Translations'		,
     'queues'			:	'Queue'			,
-    'labels'			:	'CustomLabel'           ,
+    'labels'			:	'CustomLabels'           ,
     'remoteSiteSettings'        :       'RemoteSiteSetting'     ,
     'email'                     :       'EmailTemplate'
     });
@@ -69,35 +68,39 @@ class SFDCObject:
 ##*******************************************************************##
 
 
-print (sys.argv[2])
+print (sys.argv[1])
+
+i = datetime.now()
+ 
+print (i.strftime('%Y/%m/%d %H:%M:%S'))
 
 curPath =  os.getcwd()
 
-outputPath = ''.join(e for e in sys.argv[2] if e.isalnum())
+##Addded in Bash Script
+outputPath = sys.argv[1] #+ '_' + i.strftime('%Y%m%d%H%M%S')
 
-lines = sorted(sys.argv[1].split('\n'))
+#outputPath = ''.join(e for e in sys.argv[1] if e.isalnum())
 
 
 ##### only for testing
-#file = open('examples/testFile.txt', 'r')
-#lines = file.readlines()
+file = open('Input/'+sys.argv[1], 'r')
+lines = file.readlines()
+file.close()
 #####
 
-##### Shell File Processed #####
-## 1) getPullRequest.sh
-## 2) getGitLog.sh
-
-processType = "getGitLog"
-if "pullRequest" in sys.argv[2]:
-    processType = "getPullRequest"
+#DISCONTINUED review logic for Pull Request Processing
+#processType = "getGitLog"
+#if "pullRequest" in sys.argv[1]:
+#    processType = "getPullRequest"
 
 print("Salesforce API version: " + SFDCObject.version)
 
 print("Folder to be created: " + "Output/" + outputPath)
 
     
-deleteAction = "deletemode100644"
+deleteAction = "D"
 
+# The lines that start with M or A
 
 addAction = "add"
 
@@ -168,8 +171,8 @@ for listSFDCObjects in pairSFDCObjects:
         print("file created: " + "Output/" + outputPath + "/"+ xmlFileNames.get(obj.sfdcAction))
 
 
-if processType == "getPullRequest":
-    if not os.path.exists("Input/LOG/" + outputPath):
-        os.makedirs("Input/LOG/" + outputPath)
+if not os.path.exists("Input/LOG"):
+    os.makedirs("Input/LOG")
 
-    os.rename("Input/" + sys.argv[2],"Input/LOG/" + outputPath + sys.argv[2])
+file.close()
+os.rename("Input/" + sys.argv[1],"Input/LOG/" + sys.argv[1] + i.strftime('%Y%m%d%H%M%S') + '.txt')
