@@ -85,7 +85,6 @@ outputPath = sys.argv[1] #+ '_' + i.strftime('%Y%m%d%H%M%S')
 ##### only for testing
 file = open('Input/'+sys.argv[1], 'r')
 lines = file.readlines()
-file.close()
 #####
 
 #DISCONTINUED review logic for Pull Request Processing
