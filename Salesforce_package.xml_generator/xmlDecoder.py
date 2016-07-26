@@ -145,8 +145,9 @@ tempPath = 'Output/tmp'
 deployPath = 'Deploy'
 
 if not os.path.exists(tempPath+ '/' + deployPath):
-            os.makedirs(tempPath+ '/' + deployPath)
+    os.makedirs(tempPath+ '/' + deployPath)
 
+    
 filePaths =  'filePaths.txt'
 
 

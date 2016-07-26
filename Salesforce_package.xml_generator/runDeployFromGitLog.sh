@@ -48,9 +48,11 @@ echo "Output/$var_file"
 
 #Clean tmp folder from previous failed Deploys
 
-cd Output/tmp
-#rm -rf *
-cd ../..
+if [ -d "Output/tmp" ]; then
+	cd Output/tmp
+	rm -rf *
+	cd ../..
+fi
 
 
 
@@ -62,6 +64,7 @@ echo "Use Destructive Changes? (Y/N)
 		 For manual add/remove components go to: Output/tmp/ folder."
 read useDestructiveChanges
 
+echo "Your answer: " $useDestructiveChanges
 
 
 #################################################################
@@ -70,7 +73,7 @@ read useDestructiveChanges
 
 
 
-py xmlDecoder.py "Output/$var_file" $useDestructiveChanges
+py xmlDecoder.py "Output/$var_file" "N"
 
 	
 list=$(dos2unix < Output/tmp/filePaths.txt)
