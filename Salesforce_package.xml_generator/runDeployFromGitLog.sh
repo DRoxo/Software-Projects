@@ -58,11 +58,10 @@ fi
 
 ################## Use Desctructive Changes #####################
 
-echo "Use Destructive Changes? (Y/N)
-		 Default: N
-		 !CAREFUL! the listed components will be removed
-		 For manual add/remove components go to: Output/tmp/ folder."
-read useDestructiveChanges
+echo "
+Use Destructive Changes?  !CAREFUL! the listed components will be removed. For manual add/remove components go to: Output/tmp/ folder.
+" 
+read -p 'Response(Y/N , Default: N): ' useDestructiveChanges
 
 echo "Your answer: " $useDestructiveChanges
 
@@ -112,7 +111,7 @@ if [ $antReturnCode -ne 0 ];then
  
     echo "BUILD ERROR:
 		  Analyse the generated files in the tmp/Deploy folder.
-		  In order to rerun this process: ./runAntForTmpFolder.sh
+		  In order to rerun this process: ./rerunLastDeployFromGitLog.sh
 		  Sugested actions:
 			1. Analyse the detected errors in the build.
 			2. Remove the files in error from the package.xml and from the src/ directory."
