@@ -1,8 +1,8 @@
 #!/bin/bash
 #title           :runDeployFromGitLog.sh
-#description     :This will run a python script to generate a package.xml and destructiveChanges.xml and will preform a ant Deploy
+#description     :This will run a python script to generate a package.xml and destructiveChanges.xml and preform a deploy in a Salesforce Org
 #author			 :Roxo, Diogo
-#date            :20160620
+#date            :20160727
 #version         :1.0    
 #usage			 :bash runDeployFromGitLog.sh (read comments below)
 #notes           :Install Python 3.5 to use this script.
@@ -13,6 +13,7 @@
 . Config/build.properties
 
 
+
 #################################################################
 ######################### Get Git Log ###########################
 #################################################################
@@ -20,13 +21,12 @@
 
   
 echo $VAR_PATH
-echo $VAR_BRANCH_LOCAL
+echo $VAR_BRANCH_REMOTE
 
-#git -C $VAR_PATH diff "$VAR_BRANCH_LOCAL@{$fromDate}" "$VAR_BRANCH_LOCAL@{$toDate}" 
- 
-results=$(git -C $VAR_PATH diff --name-status  $(git  -C $VAR_PATH rev-list -n1 --before="$BEFORE" $VAR_BRANCH_LOCAL)  | grep 'src/' | grep -v '.xml' | uniq) 
 
-var_file="gitLog_${VAR_BRANCH_LOCAL}_${BEFORE// /}_$(date +%Y%m%d%H%M%S)"
+results=$(git -C $VAR_PATH diff --name-status  $(git  -C $VAR_PATH rev-list -n1 --before="$BEFORE" origin/$VAR_BRANCH_REMOTE)  | grep 'src/' | grep -v '.xml' | uniq) 
+
+var_file="gitLog_${VAR_BRANCH_REMOTE}_${BEFORE// /}_$(date +%Y%m%d%H%M%S)"
 
 
 export IFS="
@@ -36,9 +36,6 @@ for line in $results; do
 done >> Input/$var_file
 
 
-
-
-##py xmlConstructor.py "gitLog_amsdevsprint16diogov2_1weekago_$(date +%Y%m%d%H%M%S)" "31.0"
 
 py xmlConstructor.py "$var_file" "$VAR_VERSION"
 
@@ -56,7 +53,7 @@ fi
 
 
 
-################## Use Desctructive Changes #####################
+################## Use Desctructive Changes? #####################
 
 echo "
 Use Destructive Changes?  !CAREFUL! the listed components will be removed. For manual add/remove components go to: Output/tmp/ folder.
@@ -72,7 +69,7 @@ echo "Your answer: " $useDestructiveChanges
 
 
 
-py xmlDecoder.py "Output/$var_file" "N"
+py xmlDecoder.py "Output/$var_file" "$useDestructiveChanges"
 
 	
 list=$(dos2unix < Output/tmp/filePaths.txt)

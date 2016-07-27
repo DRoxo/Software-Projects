@@ -87,27 +87,21 @@ file = open('Input/'+sys.argv[1], 'r')
 lines = file.readlines()
 #####
 
-#DISCONTINUED review logic for Pull Request Processing
-#processType = "getGitLog"
-#if "pullRequest" in sys.argv[1]:
-#    processType = "getPullRequest"
-
 print("Salesforce API version: " + SFDCObject.version)
 
 print("Folder to be created: " + "Output/" + outputPath)
 
     
-deleteAction = "D"
-
+deleteActionGitLog = "D"
+deleteActionPR = "---"
 # The lines that start with M or A
 
-addAction = "add"
 
 for modFile in lines:
     
-    action = addAction
+    action = "add"
     
-    if modFile.replace(" ", "").startswith(deleteAction):
+    if modFile.replace(" ", "").startswith(deleteActionGitLog) or modFile.replace(" ", "").startswith(deleteActionPR):
         action = "delete"
 
     modFileIndex = modFile.index('src/') + len('src/')
@@ -133,39 +127,47 @@ for modFile in lines:
     #sfcdObj.displaySFDCObject()
 
 
+#Only necessary for the Pull Request Processing
+
+for objAdd in sfcdObj.listSFDCObjectsAdd:
+    for objDelete in sfcdObj.listSFDCObjectsDelete:
+        if(objDelete.sfdcType == objAdd.sfdcType and objDelete.sfdcMember == objAdd.sfdcMember):
+            sfcdObj.listSFDCObjectsDelete.remove(objDelete)
+
+
+
 xmlFileNames = dict({'add':'package.xml','delete':'destructiveChanges.xml'});
 
 
-
+if not os.path.exists("Output/" + outputPath):
+    os.makedirs("Output/" + outputPath)
+            
 pairSFDCObjects = [sfcdObj.listSFDCObjectsAdd,sfcdObj.listSFDCObjectsDelete];
 
 for listSFDCObjects in pairSFDCObjects:
 
-
-    ET.register_namespace('',"http://soap.sforce.com/2006/04/metadata")
-
-    package = ET.Element("{http://soap.sforce.com/2006/04/metadata}Package")
-
-    types = ET.SubElement(package, "types")
-
-    for index,obj in enumerate(listSFDCObjects):
-        if index > 0 and listSFDCObjects[index - 1].sfdcType is not obj.sfdcType:
-            ET.SubElement(types, "name").text = listSFDCObjects[index - 1].sfdcType
-            types = ET.SubElement(package, "types")
-
-        ET.SubElement(types, "members").text = obj.sfdcMember
-
-        if (index == len(listSFDCObjects)-1):
-            ET.SubElement(types, "name").text = obj.sfdcType
-
-    if obj.sfdcAction == "add":
-        ET.SubElement(package, "version").text = sfcdObj.version
-
-    tree = ET.ElementTree(package)
-
     if listSFDCObjects:
-        if not os.path.exists("Output/" + outputPath):
-            os.makedirs("Output/" + outputPath)
+        ET.register_namespace('',"http://soap.sforce.com/2006/04/metadata")
+
+        package = ET.Element("{http://soap.sforce.com/2006/04/metadata}Package")
+
+        types = ET.SubElement(package, "types")
+
+        for index,obj in enumerate(listSFDCObjects):
+            if index > 0 and listSFDCObjects[index - 1].sfdcType is not obj.sfdcType:
+                ET.SubElement(types, "name").text = listSFDCObjects[index - 1].sfdcType
+                types = ET.SubElement(package, "types")
+
+            ET.SubElement(types, "members").text = obj.sfdcMember
+
+            if (index == len(listSFDCObjects)-1):
+                ET.SubElement(types, "name").text = obj.sfdcType
+
+        if obj.sfdcAction == "add":
+            ET.SubElement(package, "version").text = sfcdObj.version
+
+        tree = ET.ElementTree(package)
+
         tree.write("Output/" + outputPath + "/"+ xmlFileNames.get(obj.sfdcAction),xml_declaration=True,encoding="UTF-8",method="xml")
         print("file created: " + "Output/" + outputPath + "/"+ xmlFileNames.get(obj.sfdcAction))
 
@@ -174,4 +176,4 @@ if not os.path.exists("Input/LOG"):
     os.makedirs("Input/LOG")
 
 file.close()
-os.rename("Input/" + sys.argv[1],"Input/LOG/" + sys.argv[1] + i.strftime('%Y%m%d%H%M%S') + '.txt')
+os.rename("Input/" + sys.argv[1],"Input/LOG/" + sys.argv[1] + '.txt')

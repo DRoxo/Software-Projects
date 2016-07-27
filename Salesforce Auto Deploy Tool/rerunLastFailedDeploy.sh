@@ -1,8 +1,8 @@
 #!/bin/bash
 #title           :runAntForTmpFolder.sh
-#description     :This will run a python script to generate a package.xml and destructiveChanges.xml
+#description     :This will preform a deploy in a Salesforce Org
 #author		 :Roxo, Diogo
-#date            :20160620
+#date            :20160727
 #version         :0.1     
 #usage		 :bash runDeployFromGitLog.sh (read comments below)
 #notes           :Install Python 3f.5 to use this script.
