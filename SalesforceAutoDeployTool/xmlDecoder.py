@@ -15,7 +15,7 @@ class SFDCObject:
     #FIXME include missing mappings between Salesforce folders and Metadata Types on  SFDCObjectMap, SFDCObjectMapExtensions
     SFDCObjectMap = dict({
         'ApprovalProcess'       :   'approvalProcesses'     ,
-        'AuraDefinitionBundle'  :   'aura'                  ,
+        #'AuraDefinitionBundle'  :   'aura'                  ,
         'ApexClass'             :   'classes'               ,
         'ApexComponent'         :   'components'            ,
         'HomePageComponent'     :   'homePageComponents'    ,
@@ -32,12 +32,13 @@ class SFDCObject:
         'CustomApplication'     :   'applications'          ,
         'Translations'          :   'translations'          ,
         'Queue'                 :   'queues'                ,
-        'CustomLabels'           :   'labels'                
+        'CustomLabels'          :   'labels'                ,
+        'Group'                 :   'groups'
     });
 
     SFDCObjectMapExtensions = dict({
         'approvalProcesses'    : '.approvalProcess'  ,
-        'aura'                 : ''  ,
+        #'aura'                 : ''  ,
         'classes'              : '.cls'  ,
         'components'           : '.component'  ,
         'homePageComponents'   : '.homePageComponent'  ,
@@ -56,7 +57,8 @@ class SFDCObject:
         'queues'               : '.queue'  ,
         'labels'               : '.labels' ,
 	'remoteSiteSettings'   : '.remoteSite',
-        'email'                : '.email'
+        'email'                : '.email',
+        'groups'               : '.group'
         });
 
     ## List of elements that require -meta.xml file
@@ -154,6 +156,7 @@ filePaths =  'filePaths.txt'
 target = open(filePaths, 'w')
 
 for obj in SFDCObject.listSFDCObjects:
+    SFDCObject.displaySFDCObject(obj)
     print(SFDCObject.getSFDCObjectPath(obj))
     target.write(SFDCObject.getSFDCObjectPath(obj))
     target.write('\n')

@@ -33,9 +33,10 @@ class SFDCObject:
     'applications'		:	'CustomApplication'	,
     'translations'		:	'Translations'		,
     'queues'			:	'Queue'			,
-    'labels'			:	'CustomLabels'           ,
+    'labels'			:	'CustomLabels'          ,
     'remoteSiteSettings'        :       'RemoteSiteSetting'     ,
-    'email'                     :       'EmailTemplate'
+    'email'                     :       'EmailTemplate'         ,
+    'groups'                     :       'Group'
     });
 
     SFDCObjectCount = 0

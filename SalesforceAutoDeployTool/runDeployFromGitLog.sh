@@ -1,25 +1,36 @@
 #!/bin/bash
-#title           :runDeployFromPullRequest.sh
+#title           :runDeployFromGitLog.sh
 #description     :This will run a python script to generate a package.xml and destructiveChanges.xml and preform a deploy in a Salesforce Org
+#author			 :Roxo, Diogo
 #date            :20160727
-#version         :0.1     
-#usage		 :bash getPullRequest.sh (read comments below)
+#version         :1.0    
+#usage			 :bash runDeployFromGitLog.sh (read comments below)
 #notes           :Install Python 3.5 to use this script.
 #bash_version    :4.1.5(1)-release
 #==============================================================================
 
-#Define your login in the login.properties
+
+mkdir -p Input
+mkdir -p Output
+
+#Define your personal configuration
 . Config/build.properties
 
-#curl -u DiogoRoxo:BlueInfinity2016 https://bitbucket.org/api/2.0/repositories/iatasfdc/amsdev/pullrequests/128/diff -L -o Input/pullRequest_128.diff
 
-curl -u $VAR_USER:$VAR_PASS $VAR_URL/api/2.0/repositories/$VAR_REPOSITORY/$VAR_PROJECT/pullrequests/$PULLREQUESTID/diff -L -o Input/pullRequest_$PULLREQUESTID.diff
 
-results=$(grep '^+++\|^---' Input/pullRequest_$PULLREQUESTID.diff | grep 'src/' | grep -v '.xml' | uniq)
+#################################################################
+######################### Get Git Log ###########################
+#################################################################
 
-rm Input/pullRequest_$PULLREQUESTID.diff
 
-var_file="gitLog_PullRequest_$PULLREQUESTID"
+  
+echo $VAR_PATH
+echo $VAR_BRANCH_REMOTE
+
+
+results=$(git -C $VAR_PATH diff --name-status  $(git  -C $VAR_PATH rev-list -n1 --before="$BEFORE" origin/$VAR_BRANCH_REMOTE)  | grep 'src/' | grep -v '.xml' | uniq) 
+
+var_file="gitLog_${VAR_BRANCH_REMOTE}_${BEFORE// /}_$(date +%Y%m%d%H%M%S)"
 
 
 export IFS="
@@ -28,7 +39,10 @@ for line in $results; do
     echo $line  
 done >> Input/$var_file
 
-py xmlConstructor.py "$var_file" "$VAR_VERSION"
+
+
+python xmlConstructor.py "$var_file" "$VAR_VERSION"
+
 
 echo "Output/$var_file"
 
@@ -59,7 +73,7 @@ echo "Your answer: " $useDestructiveChanges
 
 
 
-py xmlDecoder.py "Output/$var_file" "$useDestructiveChanges"
+python xmlDecoder.py "Output/$var_file" "$useDestructiveChanges"
 
 	
 list=$(dos2unix < Output/tmp/filePaths.txt)
@@ -115,3 +129,4 @@ else
     echo Output/$var_file
 	exit 0;
 fi
+

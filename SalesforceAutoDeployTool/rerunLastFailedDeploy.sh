@@ -29,10 +29,10 @@ echo "ANT: Return code is: \""$antReturnCode"\""
 if [ $antReturnCode -ne 0 ];then
  
     echo "BUILD ERROR:
-		  Analyse the generated files in the tmp/Deploy folder.
+		  Analyze the generated files in the tmp/Deploy folder.
 		  In order to rerun this process: ./runAntForTmpFolder.sh
 		  Sugested actions:
-			1. Analyse the detected errors in the build.
+			1. Analyze the detected errors in the build.
 			2. Remove the files in error from the package.xml and from the src/ directory."
 			
 	echo Output/tmp

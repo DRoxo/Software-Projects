@@ -1,0 +1,30 @@
+<project name="IATA AMS Deploy build file" default="deployPackageToSB" basedir="." xmlns:sf="antlib:com.salesforce">
+
+    <property file="build.properties"/>
+    <property environment="env"/>
+
+    <!-- Setting default value for username, password and session id properties to empty string 
+         so unset values are treated as empty. Without this, ant expressions such as ${sf.username}
+         will be treated literally.
+    -->
+    <condition property="sfDestination.username" value=""> <not> <isset property="sfDestination.username"/> </not> </condition>
+    <condition property="sfDestination.password" value=""> <not> <isset property="sfDestination.password"/> </not> </condition>
+    <condition property="sfDestination.sessionId" value=""> <not> <isset property="sfDestination.sessionId"/> </not> </condition>
+
+    <taskdef resource="com/salesforce/antlib.xml" uri="antlib:com.salesforce">
+        <classpath>
+            <pathelement location="${env.SALESFORCE_ANT_HOME}/ant-salesforce.jar" />        	
+        </classpath>
+    </taskdef>
+
+
+  <!-- ####################################################### -->
+  <!-- #################   Deploy OPTIONS #################### -->
+  <!-- ####################################################### -->
+
+    <!-- Deploy the unpackaged set of metadata retrieved with retrieveUnpackaged and run tests in this organization's namespace only-->
+    <target name="deployPackageToSB">
+      <sf:deploy rollbackOnError="${sf.rollbackOnError}"  allowMissingFiles="${sf.allowMissingFiles}" singlePackage="${sf.singlePackage}" username="${sfDestination.username}" password="${sfDestination.password}" sessionId="${sfDestination.sessionId}" serverurl="${sfDestination.serverurl}" pollWaitMillis="${sf.pollWaitMillis}" maxPoll="${sf.maxPoll}" deployRoot="../Output/tmp/Deploy/src"/>
+    </target>
+
+</project>
